@@ -11,18 +11,17 @@ const app = express();
 // CORS Config
 app.use( cors() );
 
+// Read and parse of Body
+app.use( express.json() );
+
 // DB Connection
 dbConnection();
 
 // Rutas
-app.get( '/', (req, res) =>{
+app.use( '/api/users', require('./routes/users'));
+app.use( '/api/login', require('./routes/auth'));
 
-    res.json({
-        ok: true,
-        mgs: 'Hello World'
-    })
 
-});
 
 app.listen( process.env.PORT, () =>{
     console.log('¿Server running in port:', process.env.PORT);
