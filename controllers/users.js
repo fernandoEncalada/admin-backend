@@ -6,12 +6,23 @@ const { generateJWT } = require('../helpers/jwt');
 
 const getUsers = async(req, res) =>{
 
-    const users = await User.find({}, 'name email role google');
+    const paginate = Number(req.query.paginate) || 0;
+
+    const [ users, total ] = await Promise.all([
+
+        User
+            .find({}, 'name email role google img')
+            .skip( paginate )
+            .limit( 5 ),
+
+        User.countDocuments()
+
+    ]);
 
     res.json({
         ok: true,
         users,
-        uid: req.uid
+        total
     });
 
 }
