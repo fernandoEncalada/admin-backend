@@ -57,20 +57,76 @@ const createDoctor = async(req, res) => {
      }
 }
 
-const updateDoctors = (req, res) => {
+const updateDoctors = async(req, res) => {
 
-    res.json({
-        ok: true,
-        msg: 'Upaate Doctorss'
-    })
+    const id = req.params.id;
+    const uid = req.uid;
+
+    try{
+        
+        const doctorDB = Doctor.findById( id );
+
+        if( !doctorDB ){
+            return res.json({
+                ok: true,
+                msg: 'Doctor does not exists'
+            });
+        }
+
+        const changesDoctor = {
+            ...req.body,
+            user: uid,
+            // hospital: req.body.hospital
+        };
+
+        const updatedDoctor = await Doctor.findByIdAndUpdate(id, changesDoctor, { new: true});
+
+        res.json({
+            ok: true,
+            updatedDoctor
+        })
+
+    }catch(error){
+
+        res.status(500).json({
+            ok: false,
+            msg: 'Unexpected Error'
+        });
+    }
+
+
 }
 
-const deleteDoctors = (req, res) => {
+const deleteDoctors = async(req, res) => {
 
-    res.json({
-        ok: true,
-        msg: 'delete Doctorss'
-    })
+    const id = req.params.id;
+
+    try{
+        
+        const doctorDB = Doctor.findById( id );
+
+        if( !doctorDB ){
+            return res.json({
+                ok: true,
+                msg: 'Doctor does not exists'
+            });
+        }
+
+        await Doctor.findByIdAndDelete( id );
+
+        res.json({
+            ok: true,
+            msg: 'Doctor has been deleted successfully'
+        })
+
+    }catch(error){
+
+        res.status(500).json({
+            ok: false,
+            msg: 'Unexpected Error'
+        });
+    }
+
 }
 
 module.exports = {

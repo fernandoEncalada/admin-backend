@@ -31,11 +31,15 @@
     
     router.put( '/:id',
         [
+            validateJWT,
+            check('name', 'The Hospital name is required').not().isEmpty(),
+            validateFields
         ],
         updateHospital
         );
     
-    router.delete( '/:id',
+    router.delete( '/:id', 
+            validateJWT,
             deleteHospital);
     
     module.exports = router;

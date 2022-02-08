@@ -50,20 +50,76 @@ const createHospital = async(req, res) => {
 
 }
 
-const updateHospital = (req, res) => {
+const updateHospital = async(req, res) => {
 
-    res.json({
-        ok: true,
-        msg: 'Upaate Hospitals'
-    })
+    const id = req.params.id;
+    const uid = req.uid;
+
+    try{
+
+        const hospitalDB = Hospital.findById(id);
+
+        if( !hospitalDB ){
+            return res.status(404).json({
+                ok: true,
+                msg: 'Hospital does not exists'
+            });
+        }
+
+        const changesHospital = {
+            ...req.body,
+            user: uid
+        }
+
+        const updatedHospital = await Hospital.findByIdAndUpdate(id, changesHospital, { new: true });
+
+        res.json({
+            ok: true,
+            hospital: updatedHospital
+        })
+
+    }catch(error){
+        console.log(error);
+
+        res.status(500).json({
+            ok: true,
+            msg: 'Unexpected error'
+        });
+    }
+
+    
 }
 
-const deleteHospital = (req, res) => {
+const deleteHospital = async(req, res) => {
 
-    res.json({
-        ok: true,
-        msg: 'delete Hospitals'
-    })
+    const id = req.params.id;
+
+    try{
+
+        const hospitalDB = Hospital.findById(id);
+
+        if( !hospitalDB ){
+            return res.status(404).json({
+                ok: true,
+                msg: 'Hospital does not exists'
+            });
+        }
+        
+        await Hospital.findByIdAndDelete( id );
+
+        res.json({
+            ok: true,
+            msg: 'Hospital has been deleted successfully'
+        })
+
+    }catch(error){
+        console.log(error);
+
+        res.status(500).json({
+            ok: true,
+            msg: 'Unexpected error'
+        });
+    }
 }
 
 module.exports = {
